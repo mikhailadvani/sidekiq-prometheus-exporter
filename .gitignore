@@ -7,7 +7,6 @@
 /tmp/
 /Gemfile.lock
 /.ruby-version
-/out/
 # Global ignore of bundler config
 .bundle/
 

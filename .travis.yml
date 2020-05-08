@@ -38,13 +38,13 @@ jobs:
         - find .
       after_success: []
       deploy:
-        provider: pages
+        provider: releases
         cleanup: false
-        github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-        keep_history: true
-        local_dir: out
+        api_key: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        file_glob: true
+        file: ./out/*
         on:
-          branch: master
+          tags: true
 
 
   exclude:
