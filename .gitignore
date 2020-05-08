@@ -1,0 +1,18 @@
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
+/Gemfile.lock
+/.ruby-version
+/out/
+# Global ignore of bundler config
+.bundle/
+
+# rspec failure tracking
+.rspec_status
+
+# MacOs
+.DS_Store
