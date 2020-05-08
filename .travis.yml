@@ -2,21 +2,21 @@ os: linux
 language: ruby
 rvm:
   - 2.3.8
-  - 2.4.9
-  - 2.5.7
-  - 2.6.5
-  - 2.7.0
-  - ruby-head
+  # - 2.4.9
+  # - 2.5.7
+  # - 2.6.5
+  # - 2.7.0
+  # - ruby-head
 notifications:
   email: false
 
 gemfile:
   - gemfiles/sidekiq_3.3.1.gemfile
-  - gemfiles/sidekiq_3.x.gemfile
-  - gemfiles/sidekiq_4.x.gemfile
-  - gemfiles/sidekiq_5.x.gemfile
-  - gemfiles/sidekiq_6.x.gemfile
-  - gemfiles/sidekiq_head.gemfile
+  # - gemfiles/sidekiq_3.x.gemfile
+  # - gemfiles/sidekiq_4.x.gemfile
+  # - gemfiles/sidekiq_5.x.gemfile
+  # - gemfiles/sidekiq_6.x.gemfile
+  # - gemfiles/sidekiq_head.gemfile
 
 jobs:
   include:
@@ -24,6 +24,29 @@ jobs:
       gemfile: "gemfiles/sidekiq_5.x.gemfile"
       env:
         - CODECLIMATE_REPORT=true
+    - stage: helm-chart
+      language: shell
+      before_install:
+        - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+      script:
+        - mkdir -p out
+        - helm lint helm-charts/*
+        - helm package helm-charts/* -d out
+        - helm repo index --url https://mikhailadvani.github.io/sidekiq-prometheus-exporter/ out
+        - pwd
+        - ls
+        - find .
+      after_success: []
+      deploy:
+        provider: pages
+        cleanup: false
+        github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+        keep_history: true
+        local_dir: out
+        on:
+          branch: master
+
+
   exclude:
     - rvm: "2.3.8"
       gemfile: "gemfiles/sidekiq_6.x.gemfile"
@@ -70,3 +93,23 @@ after_success:
     echo "Finish recording Codeclimate test coverage";
     ./vendor/cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT;
     fi
+
+# - os: linux
+#   language: minimal
+#   jobs:
+#     include:
+#       - stage: helm-chart
+#         before_install:
+#           - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+#           - chmod 700 get_helm.sh
+#           - ./get_helm.sh
+#         script:
+#           - mkdir -p out && helm lint helm-charts/* && helm package helm-charts/* -d out && helm repo index --url https://mikhailadvani.github.io/sidekiq-prometheus-exporter/ out
+#         deploy:
+#           provider: pages
+#           cleanup: false
+#           github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+#           keep_history: true
+#           local_dir: out
+#           on:
+#             branch: helm-repo
